@@ -1,6 +1,7 @@
 ﻿using MonoTorrent;
 using MonoTorrent.Client;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -28,6 +29,7 @@ namespace uVideo_Player
         public string file_to_play;
         public float buf;
         public int buf_int;
+        NotifyIcon ico;
         extension playing_status;
         public mainform()
         {
@@ -39,7 +41,10 @@ namespace uVideo_Player
             player = new VlcMediaPlayer(vlcLibDirectory);
             player.VideoHostControlHandle = viewport.Handle;
             //player.Video.AspectRatio = "16:9";
-
+            ico = new NotifyIcon();
+            ico.Visible = true;
+            ico.Icon = Properties.Resources.display1;
+            ico.Click += delegate { Show(); };
             seeker.Enabled = false;
 
 
@@ -95,6 +100,7 @@ namespace uVideo_Player
                 await engine.StopAllAsync();
             }
             OnStopHideTorrentStr();
+            //icon.Text = "uVideo Player";
             status.Text = "Стоп";
             seeker.Value = 0;
             current_time.Text = "00:00:00";
@@ -129,7 +135,7 @@ namespace uVideo_Player
                 seeker.Enabled = true;
 
                 if (playing_status == extension.File)
-                {
+                {                    
                     progress.Visible = false;
                     loaded.Visible = false;
                     buffer.Visible = false;
@@ -140,6 +146,7 @@ namespace uVideo_Player
                 }
                 else if (playing_status == extension.Torrent)
                 {
+                    //icon.Text = $"uVideo Player - Torrent";
                     progress.Visible = true;
                     loaded.Visible = true;
                     buffer.Visible = true;
@@ -150,6 +157,7 @@ namespace uVideo_Player
                 }
                 else if (playing_status == extension.Streaming)
                 {
+                    //icon.Text = $"uVideo Player - Streaming";
                     progress.Visible = false;
                     loaded.Visible = false;
                     buffer.Visible = false;
@@ -184,7 +192,6 @@ namespace uVideo_Player
         private bool hide = false;
         private bool fullscreen_status = false;
         private bool playing = false;
-        private string destination;
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
@@ -203,6 +210,7 @@ namespace uVideo_Player
                     await manager.StopAsync();
                     await engine.StopAllAsync();
                 }
+                ico.Dispose();
             }
         }
 
@@ -213,7 +221,7 @@ namespace uVideo_Player
 
         }
 
-        public async void OpenMedia()
+        public void OpenMedia()
         {
             //player.Stop();
             if (engine.IsRunning)
@@ -229,28 +237,42 @@ namespace uVideo_Player
             }
             using (OpenFileDialog op = new OpenFileDialog())
             {
-                op.Filter = "Available files *.mkv, *.mp3, *.mp4, *.mpeg, *.avi | *mkv; *.mp3; *.mp4; *.mpeg; *.avi|Matroska Video file *.mkv | *.mkv|Music file *.mp3 | *.mp3|MP4 file *.mp4 | *.mp4|MPEG Video file *.mpeg | *.mpeg|AVI Video file *.avi | *.avi";
+                op.Filter = "Available files *.mkv, *.m4v, *.mp4, *.mpeg, *.avi | *mkv; *.m4v; *.mp4; *.mpeg; *.avi|Matroska Video file *.mkv | *.mkv|M4v Video file *.m4v | *.m4v|MP4 file *.mp4 | *.mp4|MPEG Video file *.mpeg | *.mpeg|AVI Video file *.avi | *.avi";
                 if (op.ShowDialog() == DialogResult.OK)
                 {
                     stream = new FileStream(op.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
                     playing_status = extension.File;
-                    file_to_play = $"uVideo Player [ {Path.GetFileNameWithoutExtension(op.FileName)} ]";
+                    var file = Path.GetFileName(op.FileName);
+                    file_to_play = $"uVideo Player [ {Path.GetFileName(op.FileName)} ]";
                     player.Video.IsKeyInputEnabled = false;
                     player.Video.IsMouseInputEnabled = false;
 
                     var mediaOptions = new[]
                        {
-                          ":sout =#transcode{vcodec=h264,vb=2000,venc=x264{profile=baseline},width=1280,height=720,acodec=mpga,ab=192,channels=2,samplerate=44100,scodec=none}"
-                          //":sout-keep"
+                          //":sout=#transcode{scale=0.5}"
+                         // ":duplicate{dst=display,dst=standard{access=file,mux=ts,dst="+file+"}}"
+                          ":sout-keep"
                         };
 
                     player.SetMedia(stream, mediaOptions);
-                    player.Play();
+                    player.Play();                    
+
+                    ShowNotify($"Смотрим {file_to_play}", "uVideo Player", ToolTipIcon.Info);
+
                     playing = true;
                     stop = false;
+                    
                 }
             }
             // player.Play(stream); 
+        }
+
+        void ShowNotify(string text,string title, ToolTipIcon tType)
+{
+            ico.BalloonTipText = text;
+            ico.BalloonTipTitle = title;
+            ico.BalloonTipIcon = ToolTipIcon.Info;
+            ico.ShowBalloonTip(10);
         }
 
         private void top_panel_MouseDown(object sender, MouseEventArgs e)
@@ -291,7 +313,7 @@ namespace uVideo_Player
             Close();
         }
 
-        private async void openTorrent_Click(object sender, EventArgs e)
+        private void openTorrent_Click(object sender, EventArgs e)
         {
 
         }
@@ -314,7 +336,7 @@ namespace uVideo_Player
                         await manager.WaitForMetadataAsync();
 
                         var file = manager.Files[0];
-                        var tor_stream = await manager.StreamProvider.CreateStreamAsync(file, CancellationToken.None);
+                         var tor_stream = await manager.StreamProvider.CreateStreamAsync(file, CancellationToken.None);
                         stream = tor_stream;
 
                         manager.TorrentStateChanged += Manager_TorrentStateChanged;
@@ -328,8 +350,9 @@ namespace uVideo_Player
 
                         var mediaOptions = new[]
                         {
-                        ":sout=#transcode{vcodec=h264,vb=2000,venc=x264{profile=baseline},width=1280,height=720,acodec=mpga,ab=192,channels=2,samplerate=44100,scodec=none}"+
+                        ":sout=#transcode{vcodec=h264,vb=2000,venc=x264{profile=baseline},width=1280,height=536,acodec=mpga,ab=192,channels=2,samplerate=44100,scodec=none}"+
                         ":http{mux=ts, sdp=http://192.168.0.103:8080/}",
+                        //":http{mux=ts, sdp=http://46.63.211.97:8080/}",
                         ":sout-keep",
                         ":no-sout-all"
                         };
@@ -474,6 +497,9 @@ namespace uVideo_Player
                 fullscreen.Checked = true;
                 fullscreen.Text = "Во весь экран";
                 WindowState = FormWindowState.Maximized;
+                top_panel.Hide();
+                control_panel.Hide();
+                st_strip.Hide();
             }
             else
             {
@@ -481,6 +507,9 @@ namespace uVideo_Player
                 fullscreen.Checked = false;
                 fullscreen.Text = "Во весь экран";
                 WindowState = FormWindowState.Normal;
+                top_panel.Show();
+                control_panel.Show();
+                st_strip.Show();
             }
         }
 
@@ -564,7 +593,7 @@ namespace uVideo_Player
 
                         var mediaOptions = new[]
                         {
-                        ":sout=#transcode{vcodec=h264,vb=2000,venc=x264{profile=baseline},width=1280,height=720,acodec=mpga,ab=192,channels=2,samplerate=44100,scodec=none}"+
+                        ":sout=#transcode{vcodec=h264,vb=2000,venc=x264{profile=baseline},width=1280,height=536,acodec=mpga,ab=192,channels=2,samplerate=44100,scodec=none}"+
                         ":http{mux=ts, sdp=http_address}",
                         ":sout-keep",
                         ":no-sout-all"
@@ -630,7 +659,7 @@ namespace uVideo_Player
                         // :http{ mux = ffmpeg{ mux = flv},dst =:8080 /}
                         var mediaOptions = new[]
                         {
-                        ":sout=#transcode{vcodec=h264,vb=2000,venc=x264{profile=baseline},width=1280,height=720,acodec=mpga,ab=192,channels=2,samplerate=44100,scodec=none}"+
+                        ":sout=#transcode{vcodec=h264,vb=2000,venc=x264{profile=baseline},width=1280,height=536,acodec=mpga,ab=192,channels=2,samplerate=44100,scodec=none}"+
                         ":rtp{mux=ts, sdp=rtsp://192.168.0.103:8080/}",
                         ":sout-keep",
                         ":no-sout-all"
@@ -696,7 +725,7 @@ namespace uVideo_Player
 
                         var mediaOptions = new[]
                         {
-                        ":sout=#transcode{vcodec=h264,vb=2000,venc=x264{profile=baseline},width=1280,height=720,acodec=mpga,ab=192,channels=2,samplerate=44100,scodec=none}"+
+                        ":sout=#transcode{vcodec=h264,vb=2000,venc=x264{profile=baseline},width=1280,height=536,acodec=mpga,ab=192,channels=2,samplerate=44100,scodec=none}"+
                         ":udp{dst=192.168.0.103:1234/}",
                         ":sout-keep",
                         ":no-sout-all"
@@ -840,6 +869,59 @@ namespace uVideo_Player
                 ReleaseCapture();
                 SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (!fullscreen_status)
+            {
+                fullscreen_status = true;
+                fullscreen.Checked = true;
+                fullscreen.Text = "Во весь экран";
+                WindowState = FormWindowState.Maximized;
+
+                hide = true;
+                top_panel.Visible = false;
+                control_panel.Visible = false;
+                st_strip.Visible = false;
+            }
+            else
+            {
+                fullscreen_status = false;
+                fullscreen.Checked = false;
+                fullscreen.Text = "Во весь экран";
+                WindowState = FormWindowState.Normal;
+
+                hide = false;
+                top_panel.Visible = true;
+                control_panel.Visible = true;
+                st_strip.Visible = true;
+            }
+
+            //if (!hide)
+            //{
+            //    hide = true;
+            //    top_panel.Visible = false;
+            //    control_panel.Visible = false;
+            //    st_strip.Visible = false;
+            //}
+            //else
+            //{
+            //    hide = false;
+            //    top_panel.Visible = true;
+            //    control_panel.Visible = true;
+            //    st_strip.Visible = true;
+            //}
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Hide();
+        }
+
+        private void notifyIcon1_Click(object sender, EventArgs e)
+        {
+            Show();
         }
     }
 }

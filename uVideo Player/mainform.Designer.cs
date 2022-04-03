@@ -41,9 +41,11 @@ namespace uVideo_Player
             this.torrent_status = new System.Windows.Forms.ToolStripStatusLabel();
             this.peers_found = new System.Windows.Forms.ToolStripStatusLabel();
             this.top_panel = new System.Windows.Forms.Panel();
+            this.button3 = new System.Windows.Forms.Button();
             this.caption = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.main_panel = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
             this.viewport = new System.Windows.Forms.PictureBox();
             this.main_menu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openbtn = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,6 +74,7 @@ namespace uVideo_Player
             this.play_btn = new System.Windows.Forms.Button();
             this.seeker_tip = new System.Windows.Forms.ToolTip(this.components);
             this.vol_tip = new System.Windows.Forms.ToolTip(this.components);
+            this.icon_tip = new System.Windows.Forms.ToolTip(this.components);
             this.st_strip.SuspendLayout();
             this.top_panel.SuspendLayout();
             this.main_panel.SuspendLayout();
@@ -168,6 +171,7 @@ namespace uVideo_Player
             // top_panel
             // 
             this.top_panel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(11)))), ((int)(((byte)(11)))));
+            this.top_panel.Controls.Add(this.button3);
             this.top_panel.Controls.Add(this.caption);
             this.top_panel.Controls.Add(this.button1);
             this.top_panel.Dock = System.Windows.Forms.DockStyle.Top;
@@ -176,6 +180,23 @@ namespace uVideo_Player
             this.top_panel.Size = new System.Drawing.Size(720, 32);
             this.top_panel.TabIndex = 1;
             this.top_panel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.top_panel_MouseDown);
+            // 
+            // button3
+            // 
+            this.button3.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button3.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
+            this.button3.FlatAppearance.BorderSize = 0;
+            this.button3.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(44)))), ((int)(((byte)(44)))));
+            this.button3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
+            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button3.ForeColor = System.Drawing.Color.Silver;
+            this.button3.Location = new System.Drawing.Point(656, 0);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(32, 32);
+            this.button3.TabIndex = 2;
+            this.button3.Text = "_";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // caption
             // 
@@ -209,6 +230,7 @@ namespace uVideo_Player
             // main_panel
             // 
             this.main_panel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
+            this.main_panel.Controls.Add(this.button2);
             this.main_panel.Controls.Add(this.viewport);
             this.main_panel.Controls.Add(this.control_panel);
             this.main_panel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -217,12 +239,29 @@ namespace uVideo_Player
             this.main_panel.Size = new System.Drawing.Size(720, 346);
             this.main_panel.TabIndex = 2;
             // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
+            this.button2.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
+            this.button2.FlatAppearance.BorderSize = 0;
+            this.button2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
+            this.button2.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(44)))), ((int)(((byte)(44)))));
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.button2.Location = new System.Drawing.Point(688, 271);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(32, 32);
+            this.button2.TabIndex = 2;
+            this.button2.Text = "[  ]";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Visible = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // viewport
             // 
-            this.viewport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
+            this.viewport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
             this.viewport.ContextMenuStrip = this.main_menu;
             this.viewport.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.viewport.Image = global::uVideo_Player.Properties.Resources.logo;
             this.viewport.Location = new System.Drawing.Point(0, 0);
             this.viewport.Name = "viewport";
             this.viewport.Size = new System.Drawing.Size(720, 303);
@@ -292,7 +331,7 @@ namespace uVideo_Player
             // 
             this.http.Image = global::uVideo_Player.Properties.Resources.globe;
             this.http.Name = "http";
-            this.http.Size = new System.Drawing.Size(102, 22);
+            this.http.Size = new System.Drawing.Size(180, 22);
             this.http.Text = "HTTP";
             this.http.Click += new System.EventHandler(this.http_Click);
             // 
@@ -300,7 +339,7 @@ namespace uVideo_Player
             // 
             this.rsp.Image = global::uVideo_Player.Properties.Resources.display;
             this.rsp.Name = "rsp";
-            this.rsp.Size = new System.Drawing.Size(102, 22);
+            this.rsp.Size = new System.Drawing.Size(180, 22);
             this.rsp.Text = "RTSP";
             this.rsp.Click += new System.EventHandler(this.rsp_Click);
             // 
@@ -308,7 +347,7 @@ namespace uVideo_Player
             // 
             this.udp.Image = global::uVideo_Player.Properties.Resources.two_displays;
             this.udp.Name = "udp";
-            this.udp.Size = new System.Drawing.Size(102, 22);
+            this.udp.Size = new System.Drawing.Size(180, 22);
             this.udp.Text = "UDP";
             this.udp.Click += new System.EventHandler(this.udp_Click);
             // 
@@ -440,7 +479,8 @@ namespace uVideo_Player
             0,
             0});
             this.seeker.TabIndex = 0;
-            this.seeker.ThumbInnerColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(44)))), ((int)(((byte)(44)))));
+            this.seeker.ThumbInnerColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
+            this.seeker.ThumbOuterColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(88)))), ((int)(((byte)(88)))));
             this.seeker.ThumbPenColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(44)))), ((int)(((byte)(44)))));
             this.seeker.ThumbRoundRectSize = new System.Drawing.Size(10, 10);
             this.seeker.ThumbSize = new System.Drawing.Size(10, 10);
@@ -458,7 +498,7 @@ namespace uVideo_Player
             // 
             // volume_panel
             // 
-            this.volume_panel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.volume_panel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
             this.volume_panel.Controls.Add(this.vol_state);
             this.volume_panel.Controls.Add(this.volume_tr);
             this.volume_panel.Dock = System.Windows.Forms.DockStyle.Right;
@@ -470,7 +510,7 @@ namespace uVideo_Player
             // 
             // vol_state
             // 
-            this.vol_state.BackColor = System.Drawing.Color.Transparent;
+            this.vol_state.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
             this.vol_state.ForeColor = System.Drawing.Color.Gainsboro;
             this.vol_state.Location = new System.Drawing.Point(8, 3);
             this.vol_state.Name = "vol_state";
@@ -487,7 +527,7 @@ namespace uVideo_Player
             this.volume_tr.BarPenColorTop = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.volume_tr.BorderRoundRectSize = new System.Drawing.Size(8, 8);
             this.volume_tr.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.volume_tr.ElapsedInnerColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(44)))), ((int)(((byte)(44)))));
+            this.volume_tr.ElapsedInnerColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
             this.volume_tr.ElapsedPenColorBottom = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(66)))), ((int)(((byte)(66)))));
             this.volume_tr.ElapsedPenColorTop = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(77)))), ((int)(((byte)(77)))));
             this.volume_tr.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F);
@@ -618,6 +658,11 @@ namespace uVideo_Player
             this.vol_tip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             this.vol_tip.ToolTipTitle = "Громкость";
             // 
+            // icon_tip
+            // 
+            this.icon_tip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.icon_tip.ToolTipTitle = "uVideo Player";
+            // 
             // mainform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
@@ -695,6 +740,9 @@ namespace uVideo_Player
         private System.Windows.Forms.ToolStripMenuItem udp;
         private System.Windows.Forms.ToolStripMenuItem open_watch;
         private System.Windows.Forms.ToolStripMenuItem open_stream;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.ToolTip icon_tip;
     }
 }
 
